@@ -11,6 +11,7 @@ const greetingText = document.getElementById("greetingText");
 const currentDateElement = document.getElementById("currentDate");
 
 const taskModal = document.getElementById("taskModal");
+const taskModalTitle = document.getElementById("taskModalTitle");
 const taskForm = document.getElementById("taskForm");
 
 const openTaskModalButton = document.getElementById(
@@ -25,14 +26,25 @@ const cancelTaskButton = document.getElementById(
     "cancelTaskButton"
 );
 
+const taskList = document.getElementById("taskList");
+
 const taskTitleInput = document.getElementById("taskTitle");
+
 const taskDescriptionInput = document.getElementById(
     "taskDescription"
 );
 
+const taskPriorityInput = document.getElementById(
+    "taskPriority"
+);
 
-const taskPriorityInput = document.getElementById("taskPriority");
-const taskDeadlineInput = document.getElementById("taskDeadline");
+const taskDeadlineInput = document.getElementById(
+    "taskDeadline"
+);
+
+const taskStatusInput = document.getElementById(
+    "taskStatus"
+);
 
 const descriptionCharacterCount = document.getElementById(
     "descriptionCharacterCount"
@@ -43,6 +55,7 @@ const descriptionCharacterCount = document.getElementById(
  */
 
 let tasks = loadTasks();
+let editingTaskId = null;
 
 /* 
    PAGE HEADER
@@ -102,13 +115,42 @@ function toggleSidebar() {
 }
 
 /* 
+   DATE HELPERS
+ */
+
+/**
+ * Returns today's local date in YYYY-MM-DD format.
+ *
+ * @returns {string}
+ */
+function getCurrentLocalDate() {
+    const today = new Date();
+    const timezoneOffset = today.getTimezoneOffset() * 60000;
+
+    return new Date(today.getTime() - timezoneOffset)
+        .toISOString()
+        .split("T")[0];
+}
+
+/**
+ * Prevents selecting a deadline before today.
+ */
+function setMinimumDeadline() {
+    taskDeadlineInput.min = getCurrentLocalDate();
+}
+
+/* 
    TASK MODAL
  */
 
 /**
- * Opens the task modal and focuses the title input.
+ * Opens the modal for adding a new task.
  */
 function openTaskModal() {
+    editingTaskId = null;
+    taskModalTitle.textContent = "Add New Task";
+
+    resetTaskForm();
     clearFormErrors();
 
     taskModal.classList.add("open");
@@ -122,7 +164,44 @@ function openTaskModal() {
 }
 
 /**
- * Closes the task modal and resets the form.
+ * Opens the modal and fills it with an existing task.
+ *
+ * @param {string} taskId
+ */
+function openEditTaskModal(taskId) {
+    const taskToEdit = tasks.find(
+        task => task.id === taskId
+    );
+
+    if (!taskToEdit) {
+        return;
+    }
+
+    editingTaskId = taskId;
+    taskModalTitle.textContent = "Edit Task";
+
+    clearFormErrors();
+
+    taskTitleInput.value = taskToEdit.title;
+    taskDescriptionInput.value = taskToEdit.description;
+    taskPriorityInput.value = taskToEdit.priority;
+    taskDeadlineInput.value = taskToEdit.deadline;
+    taskStatusInput.value = taskToEdit.status;
+
+    updateDescriptionCharacterCount();
+
+    taskModal.classList.add("open");
+    taskModal.setAttribute("aria-hidden", "false");
+
+    document.body.classList.add("modal-open");
+
+    setTimeout(() => {
+        taskTitleInput.focus();
+    }, 100);
+}
+
+/**
+ * Closes the task modal and resets edit mode.
  */
 function closeTaskModal() {
     taskModal.classList.remove("open");
@@ -130,11 +209,14 @@ function closeTaskModal() {
 
     document.body.classList.remove("modal-open");
 
+    editingTaskId = null;
+    taskModalTitle.textContent = "Add New Task";
+
     resetTaskForm();
 }
 
 /**
- * Closes the modal when the user clicks the dark overlay.
+ * Closes the modal when clicking the overlay.
  *
  * @param {MouseEvent} event
  */
@@ -145,7 +227,7 @@ function handleOverlayClick(event) {
 }
 
 /**
- * Closes the modal when the Escape key is pressed.
+ * Closes the modal when Escape is pressed.
  *
  * @param {KeyboardEvent} event
  */
@@ -163,7 +245,7 @@ function handleEscapeKey(event) {
  */
 
 /**
- * Displays a validation message for a form field.
+ * Displays an error for a form field.
  *
  * @param {HTMLElement} input
  * @param {HTMLElement} errorElement
@@ -175,7 +257,7 @@ function showFieldError(input, errorElement, message) {
 }
 
 /**
- * Removes the validation message from a form field.
+ * Removes an error from a form field.
  *
  * @param {HTMLElement} input
  * @param {HTMLElement} errorElement
@@ -186,7 +268,7 @@ function clearFieldError(input, errorElement) {
 }
 
 /**
- * Removes all form validation messages.
+ * Clears all form errors.
  */
 function clearFormErrors() {
     clearFieldError(
@@ -249,44 +331,7 @@ function validateTaskForm() {
 }
 
 /**
- * Handles the form submission.
- *
- * Task storage will be implemented in the next phase.
- *
- * @param {SubmitEvent} event
- */
-/**
- * Handles the task form submission.
- *
- * @param {SubmitEvent} event
- */
-function handleTaskFormSubmit(event) {
-    event.preventDefault();
-
-    if (!validateTaskForm()) {
-        return;
-    }
-
-    const newTask = {
-        id: crypto.randomUUID(),
-        title: taskTitleInput.value.trim(),
-        description: taskDescriptionInput.value.trim(),
-        priority: taskPriorityInput.value,
-        deadline: taskDeadlineInput.value,
-        status: document.getElementById("taskStatus").value,
-        createdAt: getCurrentLocalDate()
-    };
-
-    tasks.unshift(newTask);
-
-    saveTasks(tasks);
-    renderApplication(tasks);
-
-    closeTaskModal();
-}
-
-/**
- * Resets the form and its character counter.
+ * Resets the task form.
  */
 function resetTaskForm() {
     taskForm.reset();
@@ -305,36 +350,176 @@ function updateDescriptionCharacterCount() {
         `${currentLength} / 300`;
 }
 
+/* 
+   ADD AND EDIT TASKS
+ */
+
 /**
- * Returns today's date in YYYY-MM-DD format.
+ * Handles adding a new task or updating an existing task.
  *
- * @returns {string}
+ * @param {SubmitEvent} event
  */
-function getCurrentLocalDate() {
-    const today = new Date();
-    const timezoneOffset = today.getTimezoneOffset() * 60000;
+function handleTaskFormSubmit(event) {
+    event.preventDefault();
 
-    return new Date(today.getTime() - timezoneOffset)
-        .toISOString()
-        .split("T")[0];
+    if (!validateTaskForm()) {
+        return;
+    }
+
+    const taskValues = {
+        title: taskTitleInput.value.trim(),
+        description: taskDescriptionInput.value.trim(),
+        priority: taskPriorityInput.value,
+        deadline: taskDeadlineInput.value,
+        status: taskStatusInput.value
+    };
+
+    if (editingTaskId) {
+        tasks = tasks.map(task => {
+            if (task.id !== editingTaskId) {
+                return task;
+            }
+
+            return {
+                ...task,
+                ...taskValues
+            };
+        });
+    } else {
+        const newTask = {
+            id: crypto.randomUUID(),
+            ...taskValues,
+            createdAt: getCurrentLocalDate()
+        };
+
+        tasks.unshift(newTask);
+    }
+
+    saveTasks(tasks);
+    renderApplication(tasks);
+
+    closeTaskModal();
 }
 
+/* 
+   COMPLETE TASK
+ */
 
 /**
- * Sets today's date as the minimum available deadline.
+ * Toggles a task between pending and completed.
+ *
+ * @param {string} taskId
  */
-function setMinimumDeadline() {
-    taskDeadlineInput.min = getCurrentLocalDate();
+function toggleTaskStatus(taskId) {
+    tasks = tasks.map(task => {
+        if (task.id !== taskId) {
+            return task;
+        }
+
+        return {
+            ...task,
+            status:
+                task.status === "completed"
+                    ? "pending"
+                    : "completed"
+        };
+    });
+
+    saveTasks(tasks);
+    renderApplication(tasks);
 }
+
+/* 
+   DELETE TASK
+ */
+
+/**
+ * Deletes a task after confirmation.
+ *
+ * @param {string} taskId
+ */
+function deleteTask(taskId) {
+    const taskToDelete = tasks.find(
+        task => task.id === taskId
+    );
+
+    if (!taskToDelete) {
+        return;
+    }
+
+    const shouldDelete = window.confirm(
+        `Delete "${taskToDelete.title}"?`
+    );
+
+    if (!shouldDelete) {
+        return;
+    }
+
+    tasks = tasks.filter(
+        task => task.id !== taskId
+    );
+
+    saveTasks(tasks);
+    renderApplication(tasks);
+}
+
+/* 
+   TASK LIST CLICKS
+ */
+
+/**
+ * Handles clicks on task-list buttons.
+ *
+ * @param {MouseEvent} event
+ */
+function handleTaskListClick(event) {
+    const addButton = event.target.closest(
+        "#emptyStateAddButton"
+    );
+
+    if (addButton) {
+        openTaskModal();
+        return;
+    }
+
+    const actionButton = event.target.closest(
+        "[data-action]"
+    );
+
+    if (!actionButton) {
+        return;
+    }
+
+    const taskId = actionButton.dataset.taskId;
+    const action = actionButton.dataset.action;
+
+    if (action === "toggle") {
+        toggleTaskStatus(taskId);
+        return;
+    }
+
+    if (action === "edit") {
+        openEditTaskModal(taskId);
+        return;
+    }
+
+    if (action === "delete") {
+        deleteTask(taskId);
+    }
+}
+
 /* 
    EVENT LISTENERS
  */
 
 /**
- * Initializes application event listeners.
+ * Initializes all application event listeners.
  */
 function initializeEventListeners() {
-    sidebarToggle.addEventListener("click", toggleSidebar);
+    sidebarToggle.addEventListener(
+        "click",
+        toggleSidebar
+    );
 
     openTaskModalButton.addEventListener(
         "click",
@@ -351,13 +536,24 @@ function initializeEventListeners() {
         closeTaskModal
     );
 
-    taskModal.addEventListener("click", handleOverlayClick);
+    taskModal.addEventListener(
+        "click",
+        handleOverlayClick
+    );
 
-    document.addEventListener("keydown", handleEscapeKey);
+    document.addEventListener(
+        "keydown",
+        handleEscapeKey
+    );
 
     taskForm.addEventListener(
         "submit",
         handleTaskFormSubmit
+    );
+
+    taskList.addEventListener(
+        "click",
+        handleTaskListClick
     );
 
     taskDescriptionInput.addEventListener(
@@ -373,7 +569,6 @@ function initializeEventListeners() {
             );
         }
     });
-
 
     taskPriorityInput.addEventListener("change", () => {
         if (taskPriorityInput.value) {
@@ -396,9 +591,6 @@ function initializeEventListeners() {
             );
         }
     });
-    document
-    .getElementById("taskList")
-    .addEventListener("click", handleTaskListClick);
 }
 
 /* 
@@ -412,19 +604,7 @@ function initializeApp() {
     renderApplication(tasks);
 }
 
-document.addEventListener("DOMContentLoaded", initializeApp);
-
-/**
- * Handles clicks on dynamically created task-list elements.
- *
- * @param {MouseEvent} event
- */
-function handleTaskListClick(event) {
-    const addButton = event.target.closest(
-        "#emptyStateAddButton"
-    );
-
-    if (addButton) {
-        openTaskModal();
-    }
-}
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeApp
+);
