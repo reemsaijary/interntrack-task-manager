@@ -8,7 +8,7 @@ This project was developed as part of the **Codveda Technologies Web Development
 
 ## Live Demo
 
-Coming soon...
+🔗 **Live Demo:** https://reemsaijary.github.io/interntrack-task-manager/
 
 ---
 
