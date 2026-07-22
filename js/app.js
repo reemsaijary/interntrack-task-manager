@@ -17,10 +17,6 @@ const openTaskModalButton = document.getElementById(
     "openTaskModalButton"
 );
 
-const emptyStateAddButton = document.getElementById(
-    "emptyStateAddButton"
-);
-
 const closeTaskModalButton = document.getElementById(
     "closeTaskModalButton"
 );
@@ -41,6 +37,12 @@ const taskDeadlineInput = document.getElementById("taskDeadline");
 const descriptionCharacterCount = document.getElementById(
     "descriptionCharacterCount"
 );
+
+/* 
+   APPLICATION STATE
+ */
+
+let tasks = loadTasks();
 
 /* 
    PAGE HEADER
@@ -253,6 +255,11 @@ function validateTaskForm() {
  *
  * @param {SubmitEvent} event
  */
+/**
+ * Handles the task form submission.
+ *
+ * @param {SubmitEvent} event
+ */
 function handleTaskFormSubmit(event) {
     event.preventDefault();
 
@@ -260,15 +267,20 @@ function handleTaskFormSubmit(event) {
         return;
     }
 
-    const taskData = {
+    const newTask = {
+        id: crypto.randomUUID(),
         title: taskTitleInput.value.trim(),
         description: taskDescriptionInput.value.trim(),
         priority: taskPriorityInput.value,
         deadline: taskDeadlineInput.value,
-        status: document.getElementById("taskStatus").value
+        status: document.getElementById("taskStatus").value,
+        createdAt: getCurrentLocalDate()
     };
 
-    console.log("Validated task:", taskData);
+    tasks.unshift(newTask);
+
+    saveTasks(tasks);
+    renderApplication(tasks);
 
     closeTaskModal();
 }
@@ -294,21 +306,26 @@ function updateDescriptionCharacterCount() {
 }
 
 /**
- * Sets today's date as the minimum available deadline.
+ * Returns today's date in YYYY-MM-DD format.
+ *
+ * @returns {string}
  */
-function setMinimumDeadline() {
+function getCurrentLocalDate() {
     const today = new Date();
     const timezoneOffset = today.getTimezoneOffset() * 60000;
 
-    const localDate = new Date(
-        today.getTime() - timezoneOffset
-    )
+    return new Date(today.getTime() - timezoneOffset)
         .toISOString()
         .split("T")[0];
-
-    taskDeadlineInput.min = localDate;
 }
 
+
+/**
+ * Sets today's date as the minimum available deadline.
+ */
+function setMinimumDeadline() {
+    taskDeadlineInput.min = getCurrentLocalDate();
+}
 /* 
    EVENT LISTENERS
  */
@@ -320,11 +337,6 @@ function initializeEventListeners() {
     sidebarToggle.addEventListener("click", toggleSidebar);
 
     openTaskModalButton.addEventListener(
-        "click",
-        openTaskModal
-    );
-
-    emptyStateAddButton.addEventListener(
         "click",
         openTaskModal
     );
@@ -384,6 +396,9 @@ function initializeEventListeners() {
             );
         }
     });
+    document
+    .getElementById("taskList")
+    .addEventListener("click", handleTaskListClick);
 }
 
 /* 
@@ -394,6 +409,22 @@ function initializeApp() {
     initializePageHeader();
     initializeEventListeners();
     setMinimumDeadline();
+    renderApplication(tasks);
 }
 
 document.addEventListener("DOMContentLoaded", initializeApp);
+
+/**
+ * Handles clicks on dynamically created task-list elements.
+ *
+ * @param {MouseEvent} event
+ */
+function handleTaskListClick(event) {
+    const addButton = event.target.closest(
+        "#emptyStateAddButton"
+    );
+
+    if (addButton) {
+        openTaskModal();
+    }
+}

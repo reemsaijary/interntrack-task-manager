@@ -167,3 +167,22 @@
         width: 100%;
     }
 }
+
+@media (max-width: 650px) {
+    .task-card {
+        padding: 17px 14px;
+    }
+
+    .task-card-header {
+        flex-direction: column;
+    }
+
+    .task-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .task-footer {
+        flex-direction: column;
+    }
+}
