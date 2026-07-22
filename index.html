@@ -413,5 +413,50 @@
     </section>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div
+    class="modal-overlay"
+    id="deleteModal"
+    aria-hidden="true"
+>
+    <section
+        class="delete-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteModalTitle"
+    >
+        <div class="delete-modal-icon" aria-hidden="true">
+            !
+        </div>
+
+        <h2 id="deleteModalTitle">
+            Delete Task?
+        </h2>
+
+        <p>
+            Are you sure you want to delete
+            <strong id="deleteTaskName"></strong>?
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions delete-modal-actions">
+            <button
+                class="cancel-button"
+                id="cancelDeleteButton"
+                type="button"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="delete-confirm-button"
+                id="confirmDeleteButton"
+                type="button"
+            >
+                Delete Task
+            </button>
+        </div>
+    </section>
+</div>
 </body>
 </html>

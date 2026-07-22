@@ -57,6 +57,23 @@ const taskSearchInput = document.getElementById(
 const filterButtons = document.querySelectorAll(
     ".filter-button"
 );
+
+const deleteModal = document.getElementById(
+    "deleteModal"
+);
+
+const deleteTaskName = document.getElementById(
+    "deleteTaskName"
+);
+
+const cancelDeleteButton = document.getElementById(
+    "cancelDeleteButton"
+);
+
+const confirmDeleteButton = document.getElementById(
+    "confirmDeleteButton"
+);
+
 /* 
    APPLICATION STATE
  */
@@ -65,7 +82,7 @@ let tasks = loadTasks();
 let editingTaskId = null;
 let currentStatusFilter = "all";
 let currentSearchQuery = "";
-
+let deletingTaskId = null;
 /* 
    PAGE HEADER
  */
@@ -241,11 +258,17 @@ function handleOverlayClick(event) {
  * @param {KeyboardEvent} event
  */
 function handleEscapeKey(event) {
-    if (
-        event.key === "Escape" &&
-        taskModal.classList.contains("open")
-    ) {
+    if (event.key !== "Escape") {
+        return;
+    }
+
+    if (taskModal.classList.contains("open")) {
         closeTaskModal();
+        return;
+    }
+
+    if (deleteModal.classList.contains("open")) {
+        closeDeleteModal();
     }
 }
 
@@ -443,11 +466,11 @@ function toggleTaskStatus(taskId) {
  */
 
 /**
- * Deletes a task after confirmation.
+ * Opens the delete confirmation modal.
  *
  * @param {string} taskId
  */
-function deleteTask(taskId) {
+function openDeleteModal(taskId) {
     const taskToDelete = tasks.find(
         task => task.id === taskId
     );
@@ -456,20 +479,46 @@ function deleteTask(taskId) {
         return;
     }
 
-    const shouldDelete = window.confirm(
-        `Delete "${taskToDelete.title}"?`
-    );
+    deletingTaskId = taskId;
+    deleteTaskName.textContent = `"${taskToDelete.title}"`;
 
-    if (!shouldDelete) {
+    deleteModal.classList.add("open");
+    deleteModal.setAttribute("aria-hidden", "false");
+
+    document.body.classList.add("modal-open");
+
+    confirmDeleteButton.focus();
+}
+
+/**
+ * Closes the delete confirmation modal.
+ */
+function closeDeleteModal() {
+    deleteModal.classList.remove("open");
+    deleteModal.setAttribute("aria-hidden", "true");
+
+    document.body.classList.remove("modal-open");
+
+    deletingTaskId = null;
+    deleteTaskName.textContent = "";
+}
+
+/**
+ * Permanently removes the selected task.
+ */
+function confirmTaskDeletion() {
+    if (!deletingTaskId) {
         return;
     }
 
     tasks = tasks.filter(
-        task => task.id !== taskId
+        task => task.id !== deletingTaskId
     );
 
     saveTasks(tasks);
     renderFilteredTasks();
+
+    closeDeleteModal();
 }
 
 /* 
@@ -513,7 +562,18 @@ function handleTaskListClick(event) {
     }
 
     if (action === "delete") {
-        deleteTask(taskId);
+    openDeleteModal(taskId);
+}
+}
+
+/**
+ * Closes the delete modal when its overlay is clicked.
+ *
+ * @param {MouseEvent} event
+ */
+function handleDeleteOverlayClick(event) {
+    if (event.target === deleteModal) {
+        closeDeleteModal();
     }
 }
 
@@ -686,6 +746,20 @@ document
         "click",
         handleStatusFilter
     );
+    cancelDeleteButton.addEventListener(
+    "click",
+    closeDeleteModal
+);
+
+confirmDeleteButton.addEventListener(
+    "click",
+    confirmTaskDeletion
+);
+
+deleteModal.addEventListener(
+    "click",
+    handleDeleteOverlayClick
+);
 }
 
 /* 
