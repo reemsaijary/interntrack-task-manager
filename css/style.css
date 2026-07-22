@@ -636,7 +636,7 @@ p {
 
 .task-toolbar {
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) auto auto;
+    grid-template-columns: minmax(220px, 1fr) auto;
     gap: 14px;
 
     margin-bottom: 24px;
@@ -657,8 +657,7 @@ p {
     transform: translateY(-50%);
 }
 
-.search-wrapper input,
-.select-wrapper select {
+.search-wrapper input{
     width: 100%;
     min-height: 46px;
 
@@ -680,13 +679,7 @@ p {
     padding: 0 16px 0 44px;
 }
 
-.select-wrapper select {
-    min-width: 145px;
-    padding: 0 38px 0 14px;
-}
-
-.search-wrapper input:focus,
-.select-wrapper select:focus {
+.search-wrapper input:focus{
     background: #ffffff;
     border-color: var(--color-primary);
 
@@ -930,6 +923,10 @@ body.modal-open {
 
 .form-group-full {
     width: 100%;
+}
+
+.form-grid .form-group-full {
+    grid-column: 1 / -1;
 }
 
 .form-group label {

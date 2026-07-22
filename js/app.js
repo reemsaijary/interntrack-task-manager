@@ -34,7 +34,7 @@ const taskDescriptionInput = document.getElementById(
     "taskDescription"
 );
 
-const taskLevelInput = document.getElementById("taskLevel");
+
 const taskPriorityInput = document.getElementById("taskPriority");
 const taskDeadlineInput = document.getElementById("taskDeadline");
 
@@ -193,11 +193,6 @@ function clearFormErrors() {
     );
 
     clearFieldError(
-        taskLevelInput,
-        document.getElementById("taskLevelError")
-    );
-
-    clearFieldError(
         taskPriorityInput,
         document.getElementById("taskPriorityError")
     );
@@ -223,16 +218,6 @@ function validateTaskForm() {
             taskTitleInput,
             document.getElementById("taskTitleError"),
             "Task name must contain at least 3 characters."
-        );
-
-        isValid = false;
-    }
-
-    if (!taskLevelInput.value) {
-        showFieldError(
-            taskLevelInput,
-            document.getElementById("taskLevelError"),
-            "Please select a category."
         );
 
         isValid = false;
@@ -278,7 +263,6 @@ function handleTaskFormSubmit(event) {
     const taskData = {
         title: taskTitleInput.value.trim(),
         description: taskDescriptionInput.value.trim(),
-        level: taskLevelInput.value,
         priority: taskPriorityInput.value,
         deadline: taskDeadlineInput.value,
         status: document.getElementById("taskStatus").value
@@ -378,14 +362,6 @@ function initializeEventListeners() {
         }
     });
 
-    taskLevelInput.addEventListener("change", () => {
-        if (taskLevelInput.value) {
-            clearFieldError(
-                taskLevelInput,
-                document.getElementById("taskLevelError")
-            );
-        }
-    });
 
     taskPriorityInput.addEventListener("change", () => {
         if (taskPriorityInput.value) {

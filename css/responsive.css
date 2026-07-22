@@ -11,13 +11,6 @@
         grid-template-columns: 1fr auto;
     }
 
-    .select-wrapper {
-        grid-column: 1 / -1;
-    }
-
-    .select-wrapper select {
-        width: 100%;
-    }
 }
 
 /* 
@@ -115,9 +108,7 @@
         flex-direction: column;
     }
 
-    .task-toolbar {
-        grid-template-columns: 1fr;
-    }
+   
 
     .filter-group {
         width: 100%;
