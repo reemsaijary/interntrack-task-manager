@@ -143,3 +143,36 @@
         padding: 28px 18px;
     }
 }
+
+/* 
+   TASK MODAL
+ */
+
+@media (max-width: 650px) {
+    .modal-overlay {
+        align-items: end;
+        padding: 0;
+    }
+
+    .task-modal {
+        width: 100%;
+        max-height: 92vh;
+
+        padding: 24px 18px;
+
+        border-radius: 24px 24px 0 0;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+}

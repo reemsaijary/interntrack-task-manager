@@ -809,3 +809,223 @@ p {
     color: var(--color-text-secondary);
     line-height: 1.6;
 }
+
+/* 
+   TASK MODAL
+ */
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: grid;
+    place-items: center;
+
+    padding: 24px;
+
+    visibility: hidden;
+    opacity: 0;
+
+    background: rgba(24, 38, 73, 0.42);
+    backdrop-filter: blur(8px);
+
+    transition:
+        opacity var(--transition),
+        visibility var(--transition);
+
+    z-index: 1000;
+}
+
+.modal-overlay.open {
+    visibility: visible;
+    opacity: 1;
+}
+
+.task-modal {
+    width: min(680px, 100%);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+
+    padding: 28px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-large);
+
+    box-shadow:
+        0 28px 80px rgba(29, 43, 79, 0.24);
+
+    transform: translateY(20px) scale(0.98);
+
+    transition: transform var(--transition);
+}
+
+.modal-overlay.open .task-modal {
+    transform: translateY(0) scale(1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 26px;
+}
+
+.modal-header h2 {
+    margin-bottom: 0;
+    font-size: 1.55rem;
+}
+
+.modal-close-button {
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    width: 42px;
+    height: 42px;
+
+    color: var(--color-text-secondary);
+    font-size: 1.8rem;
+    line-height: 1;
+
+    background: var(--color-surface-soft);
+    border-radius: 13px;
+
+    transition:
+        color var(--transition),
+        background var(--transition),
+        transform var(--transition);
+}
+
+.modal-close-button:hover {
+    color: var(--color-danger);
+    background: var(--color-danger-soft);
+    transform: rotate(5deg);
+}
+
+/* 
+   TASK FORM
+ */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-bottom: 18px;
+}
+
+.form-group-full {
+    width: 100%;
+}
+
+.form-group label {
+    color: var(--color-text-primary);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.form-group label span {
+    color: var(--color-danger);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 13px 14px;
+
+    color: var(--color-text-primary);
+
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+
+    outline: none;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        background var(--transition);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    background: #ffffff;
+    border-color: var(--color-primary);
+
+    box-shadow:
+        0 0 0 4px rgba(102, 136, 243, 0.12);
+}
+
+.form-group input.invalid,
+.form-group textarea.invalid,
+.form-group select.invalid {
+    border-color: var(--color-danger);
+
+    box-shadow:
+        0 0 0 4px rgba(239, 106, 120, 0.1);
+}
+
+.form-error {
+    min-height: 16px;
+
+    color: var(--color-danger);
+    font-size: 0.75rem;
+}
+
+.field-helper {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    color: var(--color-text-light);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    padding-top: 6px;
+}
+
+.cancel-button {
+    min-height: 48px;
+    padding: 0 20px;
+
+    color: var(--color-text-secondary);
+    font-weight: 700;
+
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+
+    transition:
+        color var(--transition),
+        background var(--transition);
+}
+
+.cancel-button:hover {
+    color: var(--color-primary-dark);
+    background: var(--color-primary-soft);
+}
