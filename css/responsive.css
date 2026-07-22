@@ -1,0 +1,145 @@
+/* 
+   LARGE TABLETS
+ */
+
+@media (max-width: 1150px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .task-toolbar {
+        grid-template-columns: 1fr auto;
+    }
+
+    .select-wrapper {
+        grid-column: 1 / -1;
+    }
+
+    .select-wrapper select {
+        width: 100%;
+    }
+}
+
+/* 
+   TABLETS
+ */
+
+@media (max-width: 850px) {
+    :root {
+        --sidebar-width: 100%;
+    }
+
+    .app-shell {
+        display: block;
+    }
+
+    .sidebar {
+        position: sticky;
+        top: 0;
+
+        width: 100%;
+        height: auto;
+        padding: 15px 20px;
+
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .sidebar-header {
+        margin-bottom: 0;
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
+    .sidebar-nav,
+    .sidebar-progress,
+    .sidebar-footer {
+        display: none;
+    }
+
+    .sidebar.mobile-open .sidebar-nav {
+        display: flex;
+
+        margin-top: 20px;
+    }
+
+    .sidebar.mobile-open .sidebar-progress,
+    .sidebar.mobile-open .sidebar-footer {
+        display: flex;
+    }
+
+    .sidebar.mobile-open .sidebar-progress {
+        display: block;
+    }
+
+    .main-content {
+        padding: 30px 22px;
+    }
+
+    .top-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .primary-button {
+        align-self: flex-start;
+    }
+}
+
+/* 
+   MOBILE
+ */
+
+@media (max-width: 650px) {
+    .main-content {
+        padding: 24px 15px;
+    }
+
+    .top-header h1 {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tasks-section {
+        padding: 20px 15px;
+        border-radius: 20px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .task-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-group {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .filter-button {
+        flex: 1;
+        white-space: nowrap;
+    }
+
+    .select-wrapper {
+        grid-column: auto;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 100%;
+    }
+
+    .empty-state {
+        min-height: 300px;
+        padding: 28px 18px;
+    }
+}

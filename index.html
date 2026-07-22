@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="InternTrack is a responsive internship task management application."
+    >
+
+    <title>InternTrack | Internship Task Manager</title>
+
+    <!-- Main styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- JavaScript -->
+    <script src="js/storage.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="brand" aria-label="InternTrack home">
+                    <span class="brand-icon">IT</span>
+
+                    <span class="brand-text">
+                        Intern<span>Track</span>
+                    </span>
+                </a>
+
+                <button
+                    class="sidebar-toggle"
+                    id="sidebarToggle"
+                    type="button"
+                    aria-label="Toggle sidebar"
+                    aria-expanded="false"
+                >
+                    ☰
+                </button>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Main navigation">
+                <a href="#dashboard" class="nav-link active">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#tasks" class="nav-link">
+                    <span class="nav-icon">✓</span>
+                    <span>Tasks</span>
+                </a>
+
+                <a href="#progress" class="nav-link">
+                    <span class="nav-icon">↗</span>
+                    <span>Progress</span>
+                </a>
+
+                <a href="#submission" class="nav-link">
+                    <span class="nav-icon">□</span>
+                    <span>Submission</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-progress">
+                <div class="sidebar-progress-header">
+                    <span>Internship progress</span>
+                    <strong id="sidebarProgressValue">0%</strong>
+                </div>
+
+                <div
+                    class="progress-track"
+                    role="progressbar"
+                    aria-label="Internship progress"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                >
+                    <div
+                        class="progress-fill"
+                        id="sidebarProgressBar"
+                    ></div>
+                </div>
+
+                <p>Complete your planned internship tasks.</p>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-avatar" aria-hidden="true">RS</div>
+
+                <div class="user-details">
+                    <strong>Reem Saijary</strong>
+                    <span>Web Development Intern</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content" id="dashboard">
+
+            <!-- Header -->
+            <header class="top-header">
+                <div>
+                    <p class="eyebrow">Internship workspace</p>
+
+                    <h1 id="greetingText">
+                        Good morning, Reem!
+                    </h1>
+
+                    <p class="header-description">
+                        Organize your tasks, monitor deadlines,
+                        and track your internship progress.
+                    </p>
+                </div>
+
+                <button
+                    class="primary-button"
+                    id="openTaskModalButton"
+                    type="button"
+                >
+                    <span aria-hidden="true">＋</span>
+                    Add New Task
+                </button>
+            </header>
+
+            <!-- Statistics -->
+            <section
+                class="stats-grid"
+                aria-label="Task statistics"
+            >
+                <article class="stat-card">
+                    <div class="stat-icon total-icon">✓</div>
+
+                    <div>
+                        <p>Total Tasks</p>
+                        <strong id="totalTasksCount">0</strong>
+                        <span>All internship tasks</span>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon completed-icon">✓</div>
+
+                    <div>
+                        <p>Completed</p>
+                        <strong id="completedTasksCount">0</strong>
+                        <span>Successfully finished</span>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon pending-icon">…</div>
+
+                    <div>
+                        <p>Pending</p>
+                        <strong id="pendingTasksCount">0</strong>
+                        <span>Still in progress</span>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon priority-icon">!</div>
+
+                    <div>
+                        <p>High Priority</p>
+                        <strong id="highPriorityCount">0</strong>
+                        <span>Require attention</span>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Tasks section -->
+            <section class="tasks-section" id="tasks">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Task management</p>
+                        <h2>My Internship Tasks</h2>
+                    </div>
+
+                    <p id="currentDate"></p>
+                </div>
+
+                <!-- Search and filters -->
+                <div class="task-toolbar">
+                    <div class="search-wrapper">
+                        <label class="sr-only" for="taskSearch">
+                            Search tasks
+                        </label>
+
+                        <span class="search-icon" aria-hidden="true">⌕</span>
+
+                        <input
+                            type="search"
+                            id="taskSearch"
+                            placeholder="Search tasks..."
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div
+                        class="filter-group"
+                        aria-label="Filter tasks by status"
+                    >
+                        <button
+                            class="filter-button active"
+                            type="button"
+                            data-filter="all"
+                        >
+                            All
+                        </button>
+
+                        <button
+                            class="filter-button"
+                            type="button"
+                            data-filter="pending"
+                        >
+                            Pending
+                        </button>
+
+                        <button
+                            class="filter-button"
+                            type="button"
+                            data-filter="completed"
+                        >
+                            Completed
+                        </button>
+                    </div>
+
+                    <label class="select-wrapper">
+                        <span class="sr-only">
+                            Filter tasks by level
+                        </span>
+
+                        <select id="levelFilter">
+                            <option value="all">All Levels</option>
+                            <option value="level-1">Level 1</option>
+                            <option value="level-2">Level 2</option>
+                            <option value="level-3">Level 3</option>
+                            <option value="submission">Submission</option>
+                            <option value="linkedin">LinkedIn</option>
+                        </select>
+                    </label>
+                </div>
+
+                <!-- Tasks will be inserted here using JavaScript -->
+                <div class="task-list" id="taskList">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-state-illustration">
+                            <span>☁</span>
+                            <span>✓</span>
+                        </div>
+
+                        <h3>Your task list is ready</h3>
+
+                        <p>
+                            Add your first internship task and start
+                            tracking your progress.
+                        </p>
+
+                        <button
+                            class="secondary-button"
+                            id="emptyStateAddButton"
+                            type="button"
+                        >
+                            Add Your First Task
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</body>
+</html>
