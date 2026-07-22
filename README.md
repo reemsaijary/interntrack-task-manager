@@ -14,14 +14,21 @@ Coming soon...
 
 ## Screenshots
 
+### Dashboard
 
-| Dashboard                                 | Add Task                                |
-|-------------------------------------------|-----------------------------------------|
-| ![Dashboard](assets/images/Dashboard.png) | ![Add Task](assets/images/Add-task.png) |
+![Dashboard](assets/images/Dashboard.png)
 
-| Delete Confirmation                       | ![Delete](assets/images/Delete.png)     |
+---
 
+### Add New Task
 
+![Add Task](assets/images/Add-task.png)
+
+---
+
+### Delete Confirmation
+
+![Delete Confirmation](assets/images/Delete.png)
 ---
 
 # Features
