@@ -50,12 +50,21 @@ const descriptionCharacterCount = document.getElementById(
     "descriptionCharacterCount"
 );
 
+const taskSearchInput = document.getElementById(
+    "taskSearch"
+);
+
+const filterButtons = document.querySelectorAll(
+    ".filter-button"
+);
 /* 
    APPLICATION STATE
  */
 
 let tasks = loadTasks();
 let editingTaskId = null;
+let currentStatusFilter = "all";
+let currentSearchQuery = "";
 
 /* 
    PAGE HEADER
@@ -396,7 +405,7 @@ function handleTaskFormSubmit(event) {
     }
 
     saveTasks(tasks);
-    renderApplication(tasks);
+    renderFilteredTasks();
 
     closeTaskModal();
 }
@@ -426,7 +435,7 @@ function toggleTaskStatus(taskId) {
     });
 
     saveTasks(tasks);
-    renderApplication(tasks);
+    renderFilteredTasks();
 }
 
 /* 
@@ -460,7 +469,7 @@ function deleteTask(taskId) {
     );
 
     saveTasks(tasks);
-    renderApplication(tasks);
+    renderFilteredTasks();
 }
 
 /* 
@@ -506,6 +515,81 @@ function handleTaskListClick(event) {
     if (action === "delete") {
         deleteTask(taskId);
     }
+}
+
+/**
+ * Returns tasks that match the current search and status filters.
+ *
+ * @returns {Array}
+ */
+function getFilteredTasks() {
+    return tasks.filter(task => {
+        const matchesStatus =
+            currentStatusFilter === "all" ||
+            task.status === currentStatusFilter;
+
+        const searchableText = `
+            ${task.title}
+            ${task.description}
+            ${task.priority}
+        `.toLowerCase();
+
+        const matchesSearch = searchableText.includes(
+            currentSearchQuery
+        );
+
+        return matchesStatus && matchesSearch;
+    });
+}
+
+/**
+ * Renders tasks using the current filters.
+ */
+function renderFilteredTasks() {
+    const filteredTasks = getFilteredTasks();
+
+    renderTasks(filteredTasks);
+    updateTaskStatistics(tasks);
+    updateProgress(tasks);
+}
+
+/**
+ * Updates the search query and refreshes the task list.
+ *
+ * @param {InputEvent} event
+ */
+function handleTaskSearch(event) {
+    currentSearchQuery = event.target.value
+        .trim()
+        .toLowerCase();
+
+    renderFilteredTasks();
+}
+
+/**
+ * Changes the active status filter.
+ *
+ * @param {MouseEvent} event
+ */
+function handleStatusFilter(event) {
+    const clickedButton = event.target.closest(
+        ".filter-button"
+    );
+
+    if (!clickedButton) {
+        return;
+    }
+
+    currentStatusFilter = clickedButton.dataset.filter;
+
+    filterButtons.forEach(button => {
+        button.classList.toggle(
+            "active",
+            button === clickedButton
+        );
+    });
+
+    renderFilteredTasks();
 }
 
 /* 
@@ -591,6 +675,17 @@ function initializeEventListeners() {
             );
         }
     });
+    taskSearchInput.addEventListener(
+    "input",
+    handleTaskSearch
+);
+
+document
+    .querySelector(".filter-group")
+    .addEventListener(
+        "click",
+        handleStatusFilter
+    );
 }
 
 /* 
@@ -601,7 +696,7 @@ function initializeApp() {
     initializePageHeader();
     initializeEventListeners();
     setMinimumDeadline();
-    renderApplication(tasks);
+    renderFilteredTasks();
 }
 
 document.addEventListener(

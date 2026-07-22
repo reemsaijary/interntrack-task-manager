@@ -213,40 +213,58 @@ function createTaskCard(task) {
  */
 
 /**
- * Renders all tasks or the empty state.
+ * Renders tasks or an appropriate empty state.
  *
- * @param {Array} tasks
+ * @param {Array} tasksToRender
  */
-function renderTasks(tasks) {
-    if (tasks.length === 0) {
-        taskListElement.innerHTML = `
-            <div class="empty-state" id="emptyState">
-                <div class="empty-state-illustration">
-                    <span>☁</span>
-                    <span>✓</span>
+function renderTasks(tasksToRender) {
+    if (tasksToRender.length === 0) {
+        const hasStoredTasks =
+            typeof tasks !== "undefined" &&
+            tasks.length > 0;
+
+        taskListElement.innerHTML = hasStoredTasks
+            ? `
+                <div class="empty-state">
+                    <div class="empty-state-illustration">
+                        <span>⌕</span>
+                    </div>
+
+                    <h3>No matching tasks</h3>
+
+                    <p>
+                        Try changing the search text or status filter.
+                    </p>
                 </div>
+            `
+            : `
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-illustration">
+                        <span>☁</span>
+                        <span>✓</span>
+                    </div>
 
-                <h3>Your task list is ready</h3>
+                    <h3>Your task list is ready</h3>
 
-                <p>
-                    Add your first internship task and start
-                    tracking your progress.
-                </p>
+                    <p>
+                        Add your first internship task and start
+                        tracking your progress.
+                    </p>
 
-                <button
-                    class="secondary-button"
-                    id="emptyStateAddButton"
-                    type="button"
-                >
-                    Add Your First Task
-                </button>
-            </div>
-        `;
+                    <button
+                        class="secondary-button"
+                        id="emptyStateAddButton"
+                        type="button"
+                    >
+                        Add Your First Task
+                    </button>
+                </div>
+            `;
 
         return;
     }
 
-    taskListElement.innerHTML = tasks
+    taskListElement.innerHTML = tasksToRender
         .map(createTaskCard)
         .join("");
 }
